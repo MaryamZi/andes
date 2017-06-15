@@ -93,6 +93,41 @@ public class AMQTopicSessionAdaptor implements TopicSession, AMQSessionAdapter
         _session.unsubscribe(string);
     }
 
+    @Override
+    public MessageConsumer createSharedConsumer(Topic topic, String sharedSubscriptionName)
+            throws JMSException {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
+    @Override
+    public MessageConsumer createSharedConsumer(Topic topic, String sharedSubscriptionName,
+                                                String messageSelector) throws JMSException {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
+    @Override
+    public MessageConsumer createDurableConsumer(Topic topic, String name) throws JMSException {
+        return _session.createDurableConsumer(topic, name);
+    }
+
+    @Override
+    public MessageConsumer createDurableConsumer(Topic topic, String name, String messageSelector,
+                                                 boolean noLocal) throws JMSException {
+        return _session.createDurableConsumer(topic, name,messageSelector, noLocal);
+    }
+
+    @Override
+    public MessageConsumer createSharedDurableConsumer(Topic topic, String name)
+            throws JMSException {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
+    @Override
+    public MessageConsumer createSharedDurableConsumer(Topic topic, String name,
+                                                       String messageSelector) throws JMSException {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
     public BytesMessage createBytesMessage() throws JMSException
     {
         return _session.createBytesMessage();

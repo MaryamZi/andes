@@ -23,7 +23,7 @@ import org.wso2.andes.api.Message;
 /**
  *A message listener
  */
-public interface MessageListener
+public interface MessageListener extends javax.jms.MessageListener
 {
     /**
      * Process an incoming message.

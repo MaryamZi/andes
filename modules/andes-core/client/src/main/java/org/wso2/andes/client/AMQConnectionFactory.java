@@ -36,8 +36,11 @@ import java.security.PrivilegedAction;
 import java.util.Hashtable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSContext;
 import javax.jms.JMSException;
+import javax.jms.JMSRuntimeException;
 import javax.jms.JMSSecurityException;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
@@ -45,6 +48,7 @@ import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
 import javax.jms.XAConnection;
 import javax.jms.XAConnectionFactory;
+import javax.jms.XAJMSContext;
 import javax.jms.XAQueueConnection;
 import javax.jms.XAQueueConnectionFactory;
 import javax.jms.XATopicConnection;
@@ -372,7 +376,41 @@ public class AMQConnectionFactory implements ConnectionFactory, QueueConnectionF
     {
         return createConnection(userName, password, null);
     }
-    
+
+    @Override
+    public JMSContext createContext() {
+        return createContext(JMSContext.AUTO_ACKNOWLEDGE);
+    }
+
+    @Override
+    public JMSContext createContext(int sessionMode) {
+        return createContext(_defaultUsername, _defaultPassword);
+    }
+
+    @Override
+    public JMSContext createContext(String username, String password) {
+        return createContext(username, password, JMSContext.AUTO_ACKNOWLEDGE);
+    }
+
+    @Override
+    public JMSContext createContext(String username, String password, int sessionMode) {
+        if (sessionMode == JMSContext.SESSION_TRANSACTED ||
+                sessionMode == JMSContext.AUTO_ACKNOWLEDGE ||
+                sessionMode == JMSContext.CLIENT_ACKNOWLEDGE ||
+                sessionMode == JMSContext.DUPS_OK_ACKNOWLEDGE) {
+            try {
+                _defaultUsername = username;
+                _defaultPassword = password;
+                AMQConnection connection = (AMQConnection) createConnection();
+                return new AMQJMSContext(connection, sessionMode);
+            } catch (JMSException e) {
+                throw new JMSRuntimeException(e.getMessage(), null, e);
+            }
+        } else {
+            throw new JMSRuntimeException("Invalid Session Mode: " + sessionMode);
+        }
+    }
+
     public Connection createConnection(String userName, String password, String id) throws JMSException
     {
 
@@ -599,6 +637,16 @@ public class AMQConnectionFactory implements ConnectionFactory, QueueConnectionF
             throw new JMSException("A URL must be specified to access XA connections");
         }
         return createXAConnection();
+    }
+
+    @Override
+    public XAJMSContext createXAContext() {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
+    @Override
+    public XAJMSContext createXAContext(String userName, String password) {
+        throw new JmsNotImplementedRuntimeException();
     }
 
 

@@ -64,16 +64,19 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
 import javax.jms.ConnectionConsumer;
 import javax.jms.ConnectionMetaData;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.IllegalStateException;
 import javax.jms.JMSException;
+import javax.jms.JMSRuntimeException;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueSession;
 import javax.jms.ServerSessionPool;
+import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicSession;
@@ -685,6 +688,21 @@ public class AMQConnection extends Closeable implements Connection, QueueConnect
         }
     }
 
+    /**
+     * JMS 2.0 introduces default acknowledge mode as AUTO_ACKNOWLEDGE
+     */
+    public org.wso2.andes.jms.Session createSession() throws JMSException {
+        return createSession(false, Session.AUTO_ACKNOWLEDGE);
+    }
+
+    public org.wso2.andes.jms.Session createSession(final int acknowledgeMode) throws JMSException {
+        if (acknowledgeMode == Session.SESSION_TRANSACTED) {
+            return createSession(true, acknowledgeMode);
+        } else {
+            return createSession(false, acknowledgeMode);
+        }
+    }
+
     public org.wso2.andes.jms.Session createSession(final boolean transacted, final int acknowledgeMode) throws JMSException
     {
         return createSession(transacted, acknowledgeMode, _maxPrefetch);
@@ -1083,6 +1101,20 @@ public class AMQConnection extends Closeable implements Connection, QueueConnect
         checkNotClosed();
 
         return null;
+    }
+
+    @Override
+    public ConnectionConsumer createSharedDurableConnectionConsumer(Topic topic,
+            String subscriptionName, String messageSelector,
+            ServerSessionPool sessionPool, int maxMessages) throws JMSRuntimeException {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
+    @Override
+    public ConnectionConsumer createSharedConnectionConsumer(Topic topic, String subscriptionName,
+            String messageSelector, ServerSessionPool sessionPool, int maxMessages)
+            throws JMSRuntimeException {
+        throw new JmsNotImplementedRuntimeException();
     }
 
     public long getMaximumChannelCount() throws JMSException

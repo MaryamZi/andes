@@ -20,13 +20,12 @@
  */
 package org.wso2.andes.client.message;
 
-import javax.jms.JMSException;
-import javax.jms.StreamMessage;
-
 import org.apache.mina.common.ByteBuffer;
 import org.wso2.andes.AMQException;
-import org.wso2.andes.framing.AMQShortString;
-import org.wso2.andes.framing.BasicContentHeaderProperties;
+
+import javax.jms.JMSException;
+import javax.jms.MessageFormatException;
+import javax.jms.StreamMessage;
 
 /**
  * @author Apache Software Foundation
@@ -202,5 +201,15 @@ public class JMSStreamMessage extends AbstractBytesTypedMessage implements Strea
     public void writeObject(Object object) throws JMSException
     {
         super.writeObject(object);
+    }
+
+    @Override
+    public boolean isBodyAssignableTo(Class c) throws JMSException {
+        return false;
+    }
+
+    @Override
+    public <T> T getBody(Class<T> c) throws JMSException {
+        throw new MessageFormatException("Cannot call getBody on StreamMesage");
     }
 }

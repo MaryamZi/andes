@@ -3661,4 +3661,40 @@ public abstract class AMQSession<C extends BasicMessageConsumer, P extends Basic
     {
     	return DECLARE_EXCHANGES;
     }
+
+    @Override
+    public MessageConsumer createSharedConsumer(Topic topic, String sharedSubscriptionName)
+            throws JMSException {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
+    @Override
+    public MessageConsumer createSharedConsumer(Topic topic, String sharedSubscriptionName,
+                                                String messageSelector) throws JMSException {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
+    @Override
+    public MessageConsumer createDurableConsumer(Topic topic, String name) throws JMSException {
+        return createDurableSubscriber(topic, name);
+    }
+
+    @Override
+    public MessageConsumer createDurableConsumer(Topic topic, String name, String messageSelector,
+                                                 boolean noLocal) throws JMSException {
+        return createDurableSubscriber(topic, name, messageSelector, noLocal);
+    }
+
+    @Override
+    public MessageConsumer createSharedDurableConsumer(Topic topic, String name)
+            throws JMSException {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
+    @Override
+    public MessageConsumer createSharedDurableConsumer(Topic topic, String name,
+                                                       String messageSelector) throws JMSException {
+        throw new JmsNotImplementedRuntimeException();
+    }
+
 }

@@ -29,6 +29,7 @@ import javax.jms.ServerSessionPool;
 import javax.jms.Topic;
 
 import org.wso2.andes.client.AMQConnectionURL;
+import org.wso2.andes.client.JmsNotImplementedRuntimeException;
 import org.wso2.andes.jms.failover.FailoverExchangeMethod;
 import org.wso2.andes.jms.failover.FailoverMethod;
 import org.wso2.andes.jms.failover.FailoverRoundRobinServers;
@@ -236,10 +237,34 @@ public class FailoverPolicyTest extends TestCase
             }
 
             @Override
+            public ConnectionConsumer createSharedDurableConnectionConsumer(Topic topic,
+                    String subscriptionName, String messageSelector, ServerSessionPool sessionPool,
+                    int maxMessages) throws JMSException {
+                throw new JmsNotImplementedRuntimeException();
+            }
+
+            @Override
+            public ConnectionConsumer createSharedConnectionConsumer(Topic topic,
+                    String subscriptionName, String messageSelector, ServerSessionPool sessionPool,
+                    int maxMessages) throws JMSException {
+                throw new JmsNotImplementedRuntimeException();
+            }
+
+            @Override
             public javax.jms.Session createSession(boolean arg0, int arg1)
                     throws JMSException
             {
                 return null;
+            }
+
+            @Override
+            public javax.jms.Session createSession(int sessionMode) throws JMSException {
+                throw new JmsNotImplementedRuntimeException();
+            }
+
+            @Override
+            public javax.jms.Session createSession() throws JMSException {
+                throw new JmsNotImplementedRuntimeException();
             }
 
             @Override
